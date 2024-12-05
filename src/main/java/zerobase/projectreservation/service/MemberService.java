@@ -15,14 +15,16 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    /**
+     * 사용자 회원 가입
+     */
     public Member register(MemberAuth.SignUp member) {
         boolean exists = memberRepository.existsByPhoneNumber(member.getPhoneNumber());
         if (exists) {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
         }
-
         member.setAuthority(Authority.USER);
+
         return memberRepository.save(member.toEntity());
     }
-
 }

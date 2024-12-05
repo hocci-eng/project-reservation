@@ -4,17 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zerobase.projectreservation.domain.Admin;
-import zerobase.projectreservation.domain.Member;
-import zerobase.projectreservation.domain.Restaurant;
 import zerobase.projectreservation.domain.type.Authority;
+import zerobase.projectreservation.domain.type.Partnership;
 import zerobase.projectreservation.dto.AdminAuth;
-import zerobase.projectreservation.dto.MemberAuth;
-import zerobase.projectreservation.dto.RestaurantDto;
 import zerobase.projectreservation.repository.AdminRepository;
-import zerobase.projectreservation.repository.MemberRepository;
-import zerobase.projectreservation.repository.RestaurantRepository;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +15,11 @@ import java.util.List;
 public class AdminService {
 
     private final AdminRepository adminRepository;
-    private final RestaurantRepository restaurantRepository;
 
+    /**
+     * 매장 점주 회원가입
+     * 가입한 점주 엔티티 반환
+     */
     public Admin register(AdminAuth.SignUp admin) {
         boolean exists = adminRepository.existsByPhoneNumber(admin.getPhoneNumber());
         if (exists) {
@@ -31,23 +27,8 @@ public class AdminService {
         }
 
         admin.setAuthority(Authority.ADMIN);
+        admin.setPartnership(Partnership.PARTNER);
 
         return adminRepository.save(admin.toEntity());
-    }
-
-
-    public String saveRestaurantInfo(RestaurantDto restaurantDto, String loginId) {
-        Admin admin = adminRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new IllegalStateException("없는 회원입니다."));
-
-        Restaurant savedRestaurant = restaurantRepository.save(
-                Restaurant.builder()
-                        .name(restaurantDto.getName())
-                        .description(restaurantDto.getDescription())
-                        .build()
-        );
-
-        savedRestaurant.addRestaurant(admin);
-        return savedRestaurant.getName();
     }
 }

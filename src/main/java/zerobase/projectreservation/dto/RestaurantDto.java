@@ -9,7 +9,6 @@ public class RestaurantDto {
     private String name;
     private String description;
 
-
     public Restaurant toEntity() {
         return Restaurant.builder()
                 .name(name)

@@ -1,10 +1,7 @@
 package zerobase.projectreservation.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import zerobase.projectreservation.domain.type.ArriveStatus;
 
 import java.time.LocalDate;
@@ -34,6 +31,7 @@ public class Reservation {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @Setter(AccessLevel.PUBLIC)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,4 +42,5 @@ public class Reservation {
         this.restaurant = restaurant;
         restaurant.getReservations().add(this);
     }
+
 }

@@ -5,30 +5,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import zerobase.projectreservation.domain.Member;
-import zerobase.projectreservation.domain.type.Authority;
-import zerobase.projectreservation.dto.MemberAuth;
-import zerobase.projectreservation.repository.MemberRepository;
+import zerobase.projectreservation.domain.Admin;
+import zerobase.projectreservation.dto.AdminAuth.SignUp;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
-class MemberServiceTest {
+class AdminServiceTest {
 
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    MemberService memberService;
+    @Autowired AdminService adminService;
 
     @Test
     void 회원가입() {
         // given
-        MemberAuth.SignUp memberAuth = createMember("user", "password", "jay", "01011111111", Authority.USER);
+        SignUp memberAuth = createAdmin(
+                "user", "password", "jay",
+                "01011111111"
+        );
 
         // when
-        Member member = memberService.register(memberAuth);
+        Admin member = adminService.register(memberAuth);
 
         // then
         assertEquals(memberAuth.getLoginId(), member.getLoginId());
@@ -41,28 +39,29 @@ class MemberServiceTest {
     @Test()
     void 중복_회원_검증() {
         // given
-        MemberAuth.SignUp member = createMember(
-                "user", "password", "jay",
-                "01011111111", Authority.USER
-        );
-        memberService.register(member);
-
-        MemberAuth.SignUp member2 = createMember(
-                "user1", "password1", "jay2",
-                "01011111111", Authority.USER
-        );
+        Admin member1 = adminService.register(
+                createAdmin(
+                        "user", "password", "jay",
+                        "01011111111"
+                ));
 
         // when & then
-        assertThrows(IllegalStateException.class, () -> memberService.register(member2));
+        assertThrows(IllegalStateException.class,
+                () -> adminService.register(
+                        createAdmin(
+                                "user1", "password1", "jay2",
+                                "01011111111"
+                        ))
+        );
     }
 
-    private static MemberAuth.SignUp createMember(String loginId, String password, String username, String phoneNumber, Authority authority) {
-        MemberAuth.SignUp memberAuth = new MemberAuth.SignUp();
-        memberAuth.setLoginId(loginId);
-        memberAuth.setPassword(password);
-        memberAuth.setUsername(username);
-        memberAuth.setPhoneNumber(phoneNumber);
-        memberAuth.setAuthority(authority);
-        return memberAuth;
+    private static SignUp createAdmin(String loginId, String password,
+                                      String username, String phoneNumber) {
+        SignUp adminAuth = new SignUp();
+        adminAuth.setLoginId(loginId);
+        adminAuth.setPassword(password);
+        adminAuth.setUsername(username);
+        adminAuth.setPhoneNumber(phoneNumber);
+        return adminAuth;
     }
 }

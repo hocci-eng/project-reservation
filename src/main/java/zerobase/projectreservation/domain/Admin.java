@@ -28,7 +28,7 @@ public class Admin extends BaseEntity {
     private String password;
     @Column(nullable = false)
     private String username;
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 11)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)

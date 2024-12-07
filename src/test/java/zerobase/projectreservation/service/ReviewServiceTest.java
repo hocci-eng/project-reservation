@@ -3,7 +3,6 @@ package zerobase.projectreservation.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import zerobase.projectreservation.domain.Member;
 import zerobase.projectreservation.domain.Reservation;
@@ -14,7 +13,6 @@ import zerobase.projectreservation.dto.*;
 import zerobase.projectreservation.repository.MemberRepository;
 import zerobase.projectreservation.repository.ReservationRepository;
 import zerobase.projectreservation.repository.RestaurantRepository;
-import zerobase.projectreservation.repository.ReviewRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@Rollback(false)
 public class ReviewServiceTest {
 
     @Autowired
@@ -36,8 +33,6 @@ public class ReviewServiceTest {
     private ReservationRepository reservationRepository;
     @Autowired
     private RestaurantRepository restaurantRepository;
-    @Autowired
-    private ReviewRepository reviewRepository;
 
     @Test
     void 리뷰_생성() {
@@ -66,7 +61,7 @@ public class ReviewServiceTest {
         // 리뷰 생성
         String comment = "comment";
         Double rating = 1.0;
-        ReviewDto reviewDto = createReview(comment, rating);
+        ReviewDto reviewDto = createReviewDto(comment, rating);
 
         // when
         Review review = reviewService.createReview(reservation, reviewDto);
@@ -103,7 +98,7 @@ public class ReviewServiceTest {
         // 리뷰 생성
         String comment = "comment";
         Double rating = 1.0;
-        ReviewDto reviewDto = createReview(comment, rating);
+        ReviewDto reviewDto = createReviewDto(comment, rating);
 
         Review review = reviewService.createReview(reservation, reviewDto);
 
@@ -202,7 +197,7 @@ public class ReviewServiceTest {
         // 리뷰 생성
         String comment = "comment";
         Double rating = 1.0;
-        ReviewDto reviewDto = createReview(comment, rating);
+        ReviewDto reviewDto = createReviewDto(comment, rating);
 
         Review review = reviewService.createReview(reservation, reviewDto);
 
@@ -343,21 +338,11 @@ public class ReviewServiceTest {
     }
 
 
-    private static ReviewDto createReview(String comment, Double rating) {
+    private static ReviewDto createReviewDto(String comment, Double rating) {
         ReviewDto reviewDto = new ReviewDto();
         reviewDto.setComment(comment);
         reviewDto.setRating(rating);
         return reviewDto;
-    }
-
-    private static AdminAuth.SignUp createAdmin(String loginId, String password,
-                                                String username, String phoneNumber) {
-        AdminAuth.SignUp adminAuth = new AdminAuth.SignUp();
-        adminAuth.setLoginId(loginId);
-        adminAuth.setPassword(password);
-        adminAuth.setUsername(username);
-        adminAuth.setPhoneNumber(phoneNumber);
-        return adminAuth;
     }
 
     private static MemberAuth.SignUp createMember(String loginId, String password, String username, String phoneNumber, Authority authority) {

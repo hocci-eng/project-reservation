@@ -336,8 +336,7 @@ public class ReviewServiceTest {
         assertThat(restaurant.getTotalRating()).isEqualTo(2.0);
         assertThat(restaurant.getReviews().size()).isEqualTo(3);
     }
-
-
+    
     private static ReviewDto createReviewDto(String comment, Double rating) {
         ReviewDto reviewDto = new ReviewDto();
         reviewDto.setComment(comment);

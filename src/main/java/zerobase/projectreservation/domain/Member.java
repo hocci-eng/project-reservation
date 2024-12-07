@@ -27,6 +27,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Authority authority; // [USER, ADMIN]
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Reservation reservation;
 }

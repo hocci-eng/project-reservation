@@ -21,14 +21,13 @@ public class RestaurantService {
      * 레스토랑 등록
      * 등록된 레스토랑 이름 반환
      */
-    public Restaurant saveRestaurantInfo(Restaurant restaurant, String loginId) {
+    public Restaurant createRestaurantInfo(Restaurant restaurant, String loginId) {
         Admin admin = adminRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalStateException("없는 회원입니다."));
 
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
 
         savedRestaurant.addRestaurant(admin);
-
         return savedRestaurant;
     }
 
@@ -68,5 +67,26 @@ public class RestaurantService {
                 () -> new IllegalStateException("매장 설명이 없습니다."));
 
         return result.getDescription();
+    }
+
+    /**
+     * 매장 정보 수정
+     */
+    public void updateRestaurantInfo(Long id, String newName, String newDescription) {
+        Restaurant restaurant = restaurantRepository.findRestaurantById(id)
+                .orElseThrow(
+                        () -> new IllegalStateException("해당 매장이 없습니다."));
+
+        restaurant.setName(newName);
+        restaurant.setDescription(newDescription);
+        restaurantRepository.save(restaurant);
+    }
+
+    /**
+     * 매장 삭제
+     */
+    public void deleteRestaurant(Restaurant restaurant) {
+        restaurant.removeRestaurant();
+        restaurantRepository.delete(restaurant);
     }
 }

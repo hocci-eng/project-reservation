@@ -1,6 +1,7 @@
 package zerobase.projectreservation.service;
 
 import jakarta.persistence.EntityManager;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,15 +21,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
+@Rollback(false)
 class RestaurantServiceTest {
 
-    @Autowired private RestaurantService restaurantService;
-    @Autowired private RestaurantRepository restaurantRepository;
+    @Autowired
+    private RestaurantService restaurantService;
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
-    @Autowired private AdminService adminService;
-    @Autowired private AdminRepository adminRepository;
+    @Autowired
+    private AdminService adminService;
+    @Autowired
+    private AdminRepository adminRepository;
 
-    @Autowired EntityManager em;
+    @Autowired
+    EntityManager em;
 
     @Test
     void 레스토랑_등록() {
@@ -43,15 +50,15 @@ class RestaurantServiceTest {
         restaurantDto.setName("매장1");
         restaurantDto.setDescription("고기집입니다.");
 
-        Restaurant restaurant = restaurantService.saveRestaurantInfo(
+        Restaurant restaurant = restaurantService.createRestaurantInfo(
                 restaurantDto.toEntity(), admin.getLoginId());
 
         // when
+
         // then
         assertEquals(restaurant.getAdmin(), admin);
         assertEquals(restaurant.getName(), restaurantDto.getName());
     }
-
 
     @Test
     void 매장_이름_조회() {
@@ -65,12 +72,13 @@ class RestaurantServiceTest {
                         "01011111111")
         );
 
-        Restaurant savedRestaurant = restaurantService.saveRestaurantInfo(
+        Restaurant savedRestaurant = restaurantService.createRestaurantInfo(
                 entity, admin.getLoginId());
 
         // when
         Restaurant findRestaurant = restaurantService.getRestaurantByName(
-               savedRestaurant.getName());
+                savedRestaurant.getName());
+
 
         // then
         assertEquals(savedRestaurant.getName(), findRestaurant.getName());
@@ -176,6 +184,57 @@ class RestaurantServiceTest {
             System.out.println("restaurantName = " + restaurantName);
         }
         System.out.println("== 구분선4 ==");
+    }
+
+    @Test
+    void 레스토랑_수정() {
+        // given
+        Admin admin = adminService.register(
+                createAdmin(
+                        "사업자번호", "password", "jay",
+                        "01011111111")
+        );
+
+        RestaurantDto restaurantDto = new RestaurantDto();
+        restaurantDto.setName("매장1");
+        restaurantDto.setDescription("고기집입니다.");
+
+        Restaurant restaurant = restaurantService.createRestaurantInfo(
+                restaurantDto.toEntity(), admin.getLoginId());
+
+        String newName = "새로운 매장";
+        String newDescription = "새로운 매장 설명";
+
+        // when
+        restaurantService.updateRestaurantInfo(restaurant.getId(), newName, newDescription);
+
+        // then
+        Assertions.assertThat(restaurant.getName()).isEqualTo(newName);
+        Assertions.assertThat(restaurant.getDescription()).isEqualTo(newDescription);
+    }
+
+    @Test
+    void 레스토랑_삭제() {
+        // given
+        Admin admin = adminService.register(
+                createAdmin(
+                        "사업자번호", "password", "jay",
+                        "01011111111")
+        );
+
+        RestaurantDto restaurantDto = new RestaurantDto();
+        restaurantDto.setName("매장1");
+        restaurantDto.setDescription("고기집입니다.");
+
+        Restaurant restaurant = restaurantService.createRestaurantInfo(
+                restaurantDto.toEntity(), admin.getLoginId());
+
+        // when
+        restaurantService.deleteRestaurant(restaurant);
+
+        // then
+        assertEquals(restaurant.getAdmin(), null);
+        assertEquals(admin.getRestaurants().isEmpty(), true);
     }
 
     private static AdminAuth.SignUp createAdmin(String loginId, String password,

@@ -35,8 +35,8 @@ public class Admin extends BaseEntity {
     private Authority authority; // [USER, ADMIN]
 
     @Enumerated(EnumType.STRING)
-    private Partnership partnership; //[PARTNER]
+    private Partnership partnership; // [PARTNER]
 
-    @OneToMany(mappedBy = "admin")
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Restaurant> restaurants = new ArrayList<>();
 }

@@ -28,8 +28,8 @@ public class AdminAuth {
                     .password(password)
                     .username(username)
                     .phoneNumber(phoneNumber)
-                    .authority(authority)
-                    .partnership(partnership)
+                    .authority(Authority.ADMIN)
+                    .partnership(Partnership.PARTNER)
                     .build();
         }
     }

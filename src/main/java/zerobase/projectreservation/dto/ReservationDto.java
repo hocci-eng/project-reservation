@@ -18,11 +18,12 @@ public class ReservationDto {
     private Restaurant restaurant;
     private ArriveStatus arriveStatus;
 
-    public Reservation toEntity(Member member) {
+    public Reservation toEntity(Member member, Restaurant restaurant) {
         return Reservation.builder()
                 .date(date)
                 .time(time)
                 .member(member)
+                .restaurant(restaurant)
                 .arriveStatus(ArriveStatus.NOT_ARRIVED)
                 .build();
     }

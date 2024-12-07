@@ -3,7 +3,6 @@ package zerobase.projectreservation.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import zerobase.projectreservation.domain.Member;
 import zerobase.projectreservation.domain.Reservation;
@@ -23,13 +22,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class ReservationServiceTest {
 
-    @Autowired ReservationService reservationService;
+    @Autowired
+    ReservationService reservationService;
 
-    @Autowired RestaurantService restaurantService;
+    @Autowired
+    RestaurantService restaurantService;
 
-    @Autowired RestaurantRepository restaurantRepository;
+    @Autowired
+    RestaurantRepository restaurantRepository;
 
-    @Autowired MemberService memberService;
+    @Autowired
+    MemberService memberService;
 
     @Test
     void 예약_생성() {

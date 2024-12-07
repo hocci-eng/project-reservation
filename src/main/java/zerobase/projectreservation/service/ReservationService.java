@@ -21,7 +21,7 @@ public class ReservationService {
     public Reservation createReservation(ReservationDto reservationDto,
                                          Member member, Restaurant restaurant) {
 
-        Reservation reservation = reservationDto.toEntity(member);
+        Reservation reservation = reservationDto.toEntity(member, restaurant);
         reservation.addReservation(restaurant);
 
         return reservationRepository.save(reservation);

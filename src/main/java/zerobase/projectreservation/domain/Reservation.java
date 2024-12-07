@@ -13,11 +13,15 @@ import java.time.LocalTime;
 @Builder
 @Getter
 @Table(
-        uniqueConstraints = @UniqueConstraint(columnNames = {"date", "time"})
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"date", "time"}),
+                @UniqueConstraint(columnNames = {"member_id", "reservation_id"})
+        }
 )
 public class Reservation {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "reservation_id")
     private Long id;
 
@@ -37,6 +41,9 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
+    @OneToOne(mappedBy = "reservation")
+    private Review review;
 
     public void addReservation(Restaurant restaurant) {
         this.restaurant = restaurant;

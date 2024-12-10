@@ -1,5 +1,6 @@
 package zerobase.projectreservation.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import zerobase.projectreservation.domain.Member;
 import zerobase.projectreservation.domain.Reservation;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
+@Builder
 public class ReservationDto {
 
     private LocalDate date;

@@ -8,7 +8,7 @@ import zerobase.projectreservation.domain.Member;
 import zerobase.projectreservation.domain.Reservation;
 import zerobase.projectreservation.domain.Restaurant;
 import zerobase.projectreservation.domain.type.Authority;
-import zerobase.projectreservation.dto.MemberAuth;
+import zerobase.projectreservation.dto.MemberDto;
 import zerobase.projectreservation.dto.ReservationDto;
 import zerobase.projectreservation.dto.RestaurantDto;
 import zerobase.projectreservation.repository.RestaurantRepository;
@@ -37,7 +37,7 @@ class ReservationServiceTest {
     @Test
     void 예약_생성() {
         // given
-        MemberAuth.SignUp memberDto = createMember(
+        MemberDto.SignUp memberDto = createMember(
                 "user", "password", "jay",
                 "01011111111", Authority.USER
         );
@@ -69,8 +69,8 @@ class ReservationServiceTest {
         return restaurantDto;
     }
 
-    private static MemberAuth.SignUp createMember(String loginId, String password, String username, String phoneNumber, Authority authority) {
-        MemberAuth.SignUp memberAuth = new MemberAuth.SignUp();
+    private static MemberDto.SignUp createMember(String loginId, String password, String username, String phoneNumber, Authority authority) {
+        MemberDto.SignUp memberAuth = new MemberDto.SignUp();
         memberAuth.setLoginId(loginId);
         memberAuth.setPassword(password);
         memberAuth.setUsername(username);

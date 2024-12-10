@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import zerobase.projectreservation.domain.Admin;
 import zerobase.projectreservation.domain.Restaurant;
-import zerobase.projectreservation.dto.AdminAuth;
+import zerobase.projectreservation.dto.AdminDto;
 import zerobase.projectreservation.dto.RestaurantDto;
 import zerobase.projectreservation.repository.AdminRepository;
 import zerobase.projectreservation.repository.RestaurantRepository;
@@ -48,7 +48,7 @@ class RestaurantServiceTest {
         restaurantDto.setName("매장1");
         restaurantDto.setDescription("고기집입니다.");
 
-        Restaurant restaurant = restaurantService.createRestaurantInfo(
+        Restaurant restaurant = restaurantService.createRestaurant(
                 restaurantDto.toEntity(), admin.getLoginId());
 
         // when
@@ -70,7 +70,7 @@ class RestaurantServiceTest {
                         "01011111111")
         );
 
-        Restaurant savedRestaurant = restaurantService.createRestaurantInfo(
+        Restaurant savedRestaurant = restaurantService.createRestaurant(
                 entity, admin.getLoginId());
 
         // when
@@ -197,14 +197,14 @@ class RestaurantServiceTest {
         restaurantDto.setName("매장1");
         restaurantDto.setDescription("고기집입니다.");
 
-        Restaurant restaurant = restaurantService.createRestaurantInfo(
+        Restaurant restaurant = restaurantService.createRestaurant(
                 restaurantDto.toEntity(), admin.getLoginId());
 
         String newName = "새로운 매장";
         String newDescription = "새로운 매장 설명";
 
         // when
-        restaurantService.updateRestaurantInfo(restaurant.getId(), newName, newDescription);
+        restaurantService.updateRestaurant(restaurant.getId(), newName, newDescription);
 
         // then
         Assertions.assertThat(restaurant.getName()).isEqualTo(newName);
@@ -224,7 +224,7 @@ class RestaurantServiceTest {
         restaurantDto.setName("매장1");
         restaurantDto.setDescription("고기집입니다.");
 
-        Restaurant restaurant = restaurantService.createRestaurantInfo(
+        Restaurant restaurant = restaurantService.createRestaurant(
                 restaurantDto.toEntity(), admin.getLoginId());
 
         // when
@@ -235,9 +235,9 @@ class RestaurantServiceTest {
         assertEquals(admin.getRestaurants().isEmpty(), true);
     }
 
-    private static AdminAuth.SignUp createAdmin(String loginId, String password,
-                                                String username, String phoneNumber) {
-        AdminAuth.SignUp adminAuth = new AdminAuth.SignUp();
+    private static AdminDto.SignUp createAdmin(String loginId, String password,
+                                               String username, String phoneNumber) {
+        AdminDto.SignUp adminAuth = new AdminDto.SignUp();
         adminAuth.setLoginId(loginId);
         adminAuth.setPassword(password);
         adminAuth.setUsername(username);

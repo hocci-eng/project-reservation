@@ -1,92 +1,108 @@
 package zerobase.projectreservation.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import zerobase.projectreservation.domain.Admin;
 import zerobase.projectreservation.domain.Restaurant;
+import zerobase.projectreservation.dto.RestaurantDto;
+import zerobase.projectreservation.exception.impl.NotFoundRestaurantException;
+import zerobase.projectreservation.exception.impl.NotRegisteredException;
 import zerobase.projectreservation.repository.AdminRepository;
 import zerobase.projectreservation.repository.RestaurantRepository;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-
     private final AdminRepository adminRepository;
 
     /**
      * 레스토랑 등록
      * 등록된 레스토랑 이름 반환
      */
-    public Restaurant createRestaurantInfo(Restaurant restaurant, String loginId) {
-        Admin admin = adminRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new IllegalStateException("없는 회원입니다."));
+    public Restaurant createRestaurant(RestaurantDto restaurantDto, Admin admin) {
+        Admin findAdmin = adminRepository.findByLoginId(admin.getLoginId())
+                .orElseThrow(NotRegisteredException::new);
 
-        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+        Restaurant restaurant = restaurantDto.toEntity();
+        restaurant.addRestaurant(findAdmin);
 
-        savedRestaurant.addRestaurant(admin);
-        return savedRestaurant;
+        return restaurantRepository.save(restaurant);
     }
 
     /**
-     * 매장 이름으로 조회 -> 유저용
+     * 매장 이름으로 조회
+     * member 사용
      */
-    public Restaurant getRestaurantByName(String name) {
-        return restaurantRepository.findRestaurantByName(name)
-                .orElseThrow(() -> new IllegalStateException("등록된 가게가 없습니다."));
+    @Transactional(readOnly = true)
+    public Restaurant getRestaurantByName(String restaurantName) {
+
+        return restaurantRepository.findRestaurantByName(restaurantName)
+                .orElseThrow(NotFoundRestaurantException::new);
     }
 
     /**
-     * 매장 아이디로 조회 -> 내부에서 사용
+     * 등록된 모든 가게 이름순으로 정렬 조회용
+     * member 사용
      */
-    public Restaurant getRestaurantById(Long id) {
-        return restaurantRepository.findRestaurantById(id)
-                .orElseThrow(() -> new IllegalStateException("등록된 가게가 없습니다."));
-    }
-
-    /**
-     * 등록된 모든 가게 조회
-     */
-    public List<Restaurant> getAllRestaurants() {
-        List<Restaurant> result = restaurantRepository.findAllJoinFetch();
+    @Transactional(readOnly = true)
+    public Page<RestaurantDto> getAllRestaurants(Pageable pageable) {
+        Page<RestaurantDto> result = restaurantRepository.getAllRestaurantsOrderByName(pageable)
+                .map(Restaurant::toRestaurantDto);
         if (result.isEmpty()) {
-            throw new IllegalStateException("등록된 가게가 없습니다.");
+            throw new NotFoundRestaurantException();
         }
         return result;
     }
 
     /**
-     * 매장 정보 조회
+     * 등록된 가게 조회
+     * admin 사용
      */
-    public String getRestaurantDescription(Restaurant restaurant) {
-        Restaurant result = restaurantRepository.findRestaurantByName(
-                restaurant.getName()).orElseThrow(
-                () -> new IllegalStateException("매장 설명이 없습니다."));
+    @Transactional(readOnly = true)
+    public Page<RestaurantDto> getRestaurantsById(Admin admin, Pageable pageable) {
+        Page<Restaurant> restaurants = restaurantRepository
+                .findRestaurantsByAdminId(admin.getId(), pageable);
+        if (restaurants.isEmpty()) {
+            throw new NotFoundRestaurantException();
+        }
 
-        return result.getDescription();
+        return restaurants.map(Restaurant::toRestaurantDto);
     }
 
     /**
      * 매장 정보 수정
      */
-    public void updateRestaurantInfo(Long id, String newName, String newDescription) {
-        Restaurant restaurant = restaurantRepository.findRestaurantById(id)
-                .orElseThrow(
-                        () -> new IllegalStateException("해당 매장이 없습니다."));
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Restaurant updateRestaurant(
+            Admin admin, String restaurantName, RestaurantDto newRestaurantDto) {
 
-        restaurant.setName(newName);
-        restaurant.setDescription(newDescription);
-        restaurantRepository.save(restaurant);
+        Restaurant restaurant = restaurantRepository.findRestaurantByAdminIdAndName(
+                        admin.getId(), restaurantName)
+                .orElseThrow(NotFoundRestaurantException::new);
+
+        restaurant.setName(newRestaurantDto.getName());
+        restaurant.setName(newRestaurantDto.getName());
+
+        return restaurant;
     }
 
     /**
      * 매장 삭제
      */
-    public void deleteRestaurant(Restaurant restaurant) {
+    public String deleteRestaurant(Admin admin, String restaurantName) {
+        Restaurant restaurant = restaurantRepository.findRestaurantByAdminIdAndName(
+                        admin.getId(), restaurantName)
+                .orElseThrow(NotFoundRestaurantException::new);
+
         restaurant.removeRestaurant();
         restaurantRepository.delete(restaurant);
+        return restaurant.getName();
     }
 }

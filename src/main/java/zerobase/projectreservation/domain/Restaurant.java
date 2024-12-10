@@ -2,6 +2,7 @@ package zerobase.projectreservation.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import zerobase.projectreservation.dto.RestaurantDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,8 @@ import java.util.List;
 @Getter
 public class Restaurant {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "restaurant_id")
     private Long id;
 
@@ -21,8 +23,8 @@ public class Restaurant {
     @Column(name = "restaurant_rating")
     private Double totalRating;
 
-    @Setter
     @Column(name = "restaurant_name")
+    @Setter
     private String name;
     @Setter
     private String description;
@@ -47,5 +49,13 @@ public class Restaurant {
             this.admin.getRestaurants().remove(this);
             this.admin = null;
         }
+    }
+
+    public RestaurantDto toRestaurantDto() {
+        return RestaurantDto.builder()
+                .totalRating(this.totalRating)
+                .name(this.name)
+                .description(this.description)
+                .build();
     }
 }

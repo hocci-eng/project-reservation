@@ -1,11 +1,12 @@
 package zerobase.projectreservation.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import zerobase.projectreservation.domain.Admin;
+import zerobase.projectreservation.domain.Member;
 import zerobase.projectreservation.domain.type.Authority;
-import zerobase.projectreservation.domain.type.Partnership;
 
-public class AdminAuth {
+
+public class MemberDto {
 
     @Data
     public static class SignIn {
@@ -14,22 +15,21 @@ public class AdminAuth {
     }
 
     @Data
+    @Builder
     public static class SignUp {
         private String loginId;
         private String password;
         private String username;
         private String phoneNumber;
         private Authority authority;
-        private Partnership partnership;
 
-        public Admin toEntity() {
-            return Admin.builder()
+        public Member toEntity() {
+            return Member.builder()
                     .loginId(loginId)
                     .password(password)
                     .username(username)
                     .phoneNumber(phoneNumber)
-                    .authority(Authority.ADMIN)
-                    .partnership(Partnership.PARTNER)
+                    .authority(Authority.USER)
                     .build();
         }
     }

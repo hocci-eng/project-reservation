@@ -3,6 +3,7 @@ package zerobase.projectreservation.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import zerobase.projectreservation.domain.type.ArriveStatus;
+import zerobase.projectreservation.dto.ReservationDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,7 +19,7 @@ import java.time.LocalTime;
                 @UniqueConstraint(columnNames = {"member_id", "reservation_id"})
         }
 )
-public class Reservation {
+public class Reservation extends BaseEntity {
 
     @Id
     @GeneratedValue
@@ -30,19 +31,19 @@ public class Reservation {
     @Column(nullable = false)
     private LocalTime time;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private ArriveStatus arriveStatus;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    @Setter(AccessLevel.PUBLIC)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @OneToOne(mappedBy = "reservation")
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private Review review;
 
     public void addReservation(Restaurant restaurant) {
@@ -50,4 +51,13 @@ public class Reservation {
         restaurant.getReservations().add(this);
     }
 
+    public ReservationDto toReservationDto() {
+        return ReservationDto.builder()
+                .date(date)
+                .time(time)
+                .member(member.toMemberDto().toEntity())
+                .restaurant(restaurant.toRestaurantDto().toEntity())
+                .arriveStatus(arriveStatus)
+                .build();
+    }
 }

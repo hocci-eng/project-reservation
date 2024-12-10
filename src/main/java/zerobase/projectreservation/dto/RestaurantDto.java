@@ -1,9 +1,11 @@
 package zerobase.projectreservation.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import zerobase.projectreservation.domain.Restaurant;
 
 @Data
+@Builder
 public class RestaurantDto {
 
     private Double totalRating;

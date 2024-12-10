@@ -38,7 +38,7 @@ public class ReviewServiceTest {
     void 리뷰_생성() {
         // given
         // 멤버 생성
-        MemberAuth.SignUp memberAuth = createMember(
+        MemberDto.SignUp memberAuth = createMember(
                 "user", "password", "jay",
                 "01011111111", Authority.USER
         );
@@ -75,7 +75,7 @@ public class ReviewServiceTest {
     void 리뷰_조회() {
         // given
         // 멤버 생성
-        MemberAuth.SignUp memberAuth = createMember(
+        MemberDto.SignUp memberAuth = createMember(
                 "user", "password", "jay",
                 "01011111111", Authority.USER
         );
@@ -93,14 +93,14 @@ public class ReviewServiceTest {
 
         // 예약 생성
         Reservation reservation = reservationDto.toEntity(member, restaurant);
-        reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
         // 리뷰 생성
         String comment = "comment";
         Double rating = 1.0;
         ReviewDto reviewDto = createReviewDto(comment, rating);
 
-        Review review = reviewService.createReview(reservation, reviewDto);
+        Review review = reviewService.createReview(savedReservation, reviewDto);
 
         // when
         Review findReview = reviewService.getReview(review.getId());
@@ -174,7 +174,7 @@ public class ReviewServiceTest {
     void 리뷰_수정() {
         // given
         // 멤버 생성
-        MemberAuth.SignUp memberAuth = createMember(
+        MemberDto.SignUp memberAuth = createMember(
                 "user", "password", "jay",
                 "01011111111", Authority.USER
         );
@@ -336,7 +336,7 @@ public class ReviewServiceTest {
         assertThat(restaurant.getTotalRating()).isEqualTo(2.0);
         assertThat(restaurant.getReviews().size()).isEqualTo(3);
     }
-    
+
     private static ReviewDto createReviewDto(String comment, Double rating) {
         ReviewDto reviewDto = new ReviewDto();
         reviewDto.setComment(comment);
@@ -344,8 +344,8 @@ public class ReviewServiceTest {
         return reviewDto;
     }
 
-    private static MemberAuth.SignUp createMember(String loginId, String password, String username, String phoneNumber, Authority authority) {
-        MemberAuth.SignUp memberAuth = new MemberAuth.SignUp();
+    private static MemberDto.SignUp createMember(String loginId, String password, String username, String phoneNumber, Authority authority) {
+        MemberDto.SignUp memberAuth = new MemberDto.SignUp();
         memberAuth.setLoginId(loginId);
         memberAuth.setPassword(password);
         memberAuth.setUsername(username);

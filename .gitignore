@@ -39,3 +39,5 @@ out/
 # Log files
 *.log
 logs/
+
+test

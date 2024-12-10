@@ -6,7 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import zerobase.projectreservation.domain.Member;
 import zerobase.projectreservation.domain.type.Authority;
-import zerobase.projectreservation.dto.MemberAuth;
+import zerobase.projectreservation.dto.MemberDto;
+import zerobase.projectreservation.exception.impl.AlreadyExistException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,7 +22,7 @@ class MemberServiceTest {
     @Test
     void 회원가입() {
         // given
-        MemberAuth.SignUp memberAuth = createMember("user", "password", "jay", "01011111111", Authority.USER);
+        MemberDto.SignUp memberAuth = createMember("user", "password", "jay", "01011111111", Authority.USER);
 
         // when
         Member member = memberService.register(memberAuth);
@@ -37,23 +38,23 @@ class MemberServiceTest {
     @Test()
     void 중복_회원_검증() {
         // given
-        MemberAuth.SignUp member = createMember(
+        MemberDto.SignUp member = createMember(
                 "user", "password", "jay",
                 "01011111111", Authority.USER
         );
         memberService.register(member);
 
-        MemberAuth.SignUp member2 = createMember(
+        MemberDto.SignUp member2 = createMember(
                 "user1", "password1", "jay2",
                 "01011111111", Authority.USER
         );
 
         // when & then
-        assertThrows(IllegalStateException.class, () -> memberService.register(member2));
+        assertThrows(AlreadyExistException.class, () -> memberService.register(member2));
     }
 
-    private static MemberAuth.SignUp createMember(String loginId, String password, String username, String phoneNumber, Authority authority) {
-        MemberAuth.SignUp memberAuth = new MemberAuth.SignUp();
+    private static MemberDto.SignUp createMember(String loginId, String password, String username, String phoneNumber, Authority authority) {
+        MemberDto.SignUp memberAuth = new MemberDto.SignUp();
         memberAuth.setLoginId(loginId);
         memberAuth.setPassword(password);
         memberAuth.setUsername(username);
